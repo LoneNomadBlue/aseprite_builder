@@ -27,7 +27,8 @@ jobs:
           data=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest)
           LATEST_TAG=$(echo "${data}" | jq -r '.tag_name')
           DOWNLOAD_URL=$(echo "${data}" | jq -r '.assets[].browser_download_url')
-          VERSION_INFO=$(echo "${data}" | jq -r '.body')
+          # Safely escape newlines and special characters in release notes
+          VERSION_INFO=$(echo "${data}" | jq -r '.body' | tr '\n' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')
 
           echo "${LATEST_TAG}" > ${LATEST_TAG}.txt
           echo "latest_tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
